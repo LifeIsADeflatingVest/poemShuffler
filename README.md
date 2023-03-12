@@ -1,1 +1,1 @@
-A simple JavaScript program that creates random orderings of existing poems. For more information see the [relevant page on my Blog](https://blog.homeforfiction.com/2020/07/18/a-javascript-poem-shuffler/) 
+
