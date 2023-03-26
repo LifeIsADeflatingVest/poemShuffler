@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Random Poem Shuffler</title>
+</head>
+<body>
+  <div id="poem-container">
+    <h2 id="poem-title"></h2>
+    <ul id="poem-lines"></ul>
+  </div>
+  <button id="shuffle-button">Shuffle Lines</button>
+  
+  <script>
+    fetch("https://poetrydb.org/random")
+      .then(response => response.json())
+      .then(data => {
+        const poem = data[0];
+        document.querySelector("#poem-title").textContent = poem.title;
+        poem.lines.forEach(line => {
+          const li = document.createElement("li");
+          li.textContent = line;
+          document.querySelector("#poem-lines").appendChild(li);
+        });
+      });
+      
+    const shuffleButton = document.querySelector("#shuffle-button");
+    shuffleButton.addEventListener("click", () => {
+      const lines = Array.from(document.querySelectorAll("#poem-lines li"));
+      lines.sort(() => Math.random() - 0.5);
+      lines.forEach(line => document.querySelector("#poem-lines").appendChild(line));
+    });
+  </script>
+</body>
+</html>
