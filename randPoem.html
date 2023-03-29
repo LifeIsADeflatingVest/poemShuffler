@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Random Poem Shuffler</title>
+	 <style>
+      body {
+        background-color: black;
+        color: silver;
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        background-color: silver;
+        color: black;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      label[for="file"] {
+        padding: 10px 20px;
+        background-color: silver;
+        color: black;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+
+      #shuffle-button {
+        margin-left: 10px;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        margin-top: 20px;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Random Poem Shuffler</h1>
+    <div>
+      <button id="new-poem-button">Get New Poem</button>
+      <label for="file">Upload a text file:</label>
+      <input type="file" id="file" accept=".txt" />
+      <button id="shuffle-button">Shuffle Lines</button>
+    </div>
+    <div>
+      <pre id="poem"></pre>
+    </div>
+    <script>
+      const poemElement = document.getElementById("poem");
+      const shuffleButton = document.getElementById("shuffle-button");
+      const newPoemButton = document.getElementById("new-poem-button");
+      let lines = [];
+
+      function shuffleLines(lines) {
+        // Use the Fisher-Yates shuffle algorithm to shuffle the lines in-place
+        for (let i = lines.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [lines[i], lines[j]] = [lines[j], lines[i]];
+        }
+        return lines;
+      }
+
+      async function fetchPoem() {
+        const response = await fetch("https://poetrydb.org/random");
+        const data = await response.json();
+        return data[0].lines;
+      }
+
+      function handleFileUpload() {
+        const fileReader = new FileReader();
+        fileReader.onload = (event) => {
+          lines = event.target.result.split("\n").filter((line) => line !== "");
+          const shuffledLines = shuffleLines(lines);
+          poemElement.textContent = shuffledLines.join("\n");
+        };
+        fileReader.readAsText(this.files[0]);
+      }
+
+      function handleShuffleButtonClick() {
+        if (lines.length > 0) {
+          const shuffledLines = shuffleLines(lines);
+          poemElement.textContent = shuffledLines.join("\n");
+        }
+      }
+
+      async function handleNewPoemButtonClick() {
+        lines = await fetchPoem();
+        poemElement.textContent = lines.join("\n");
+      }
+
+      document.getElementById("file").addEventListener("change", handleFileUpload);
+      shuffleButton.addEventListener("click", handleShuffleButtonClick);
+      newPoemButton.addEventListener("click", handleNewPoemButtonClick);
+    </script>
+  </body>
+</html>
